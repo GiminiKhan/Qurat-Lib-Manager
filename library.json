@@ -1,0 +1,18 @@
+[
+  {
+    "title":"python crash course",
+    "author":"Eric Mathes",
+    "publication_year":2019,
+    "genre":"programming",
+    "read_status":false,
+    "added_data":"2025-03-18 1:40:23"
+  },
+  {
+   "title":"Automate the boring stuff with python",
+    "author":"Fiza Sagir",
+    "publication_year":2011,
+    "genre":"programming",
+    "read_status":true,
+    "added_data":"2025-02-15 1:50:15" 
+  },
+]
