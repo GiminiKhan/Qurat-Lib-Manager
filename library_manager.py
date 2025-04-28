@@ -4,13 +4,16 @@ import json
 import os
 from datetime import datetime
 import time
-import random 
+import random
 import requests
+import plotly.graph_objects as go
+import plotly.express as px
+from streamlit_lottie import st_lottie
 
 #set page configuration 
 st.set_page_config(
     page_title="Personal Library Management System 📚",
-    page_icon= "📚",
+    page_icon="📚",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -133,6 +136,7 @@ def save_library():
         st.error(f"Error saving library: {e}")
         return False 
     
+
 #add a book to library 
 def add_book(title, author, publication_year, genre, read_status):
     book = {
@@ -268,7 +272,7 @@ def create_visualizations(stats):
 #load library
 load_library()
 
-st.sidebar.markdown("<h1 style='text-align: center;'> Navigation</h1>", unsafe_allow_html=True)
+st.sidebar.markdown("<h1 style='text-align: center;'> Navigation 📚</h1>", unsafe_allow_html=True)
 
 lottie_book = load_lottieurl("https://assets9.lottieflies.com/temp/1f20_aKAfIn.json")
 
@@ -277,23 +281,23 @@ if lottie_book:
         st_lottie(lottie_book, height=200, key='book_animation')
 
 nav_options = st.sidebar.radio(
-    "Choose an option:",
-    ["View Library", "Add Book", "Search Books", "Library Statistics"]
+    "Choose an option 📚:",
+    ["View Library 📖", "Add Book ➕", "Search Books 🔍", "Library Statistics 📊"]
 )
 
-if nav_options == "View Library":
+if nav_options == "View Library 📖":
     st.session_state.current_view = 'library'
-elif nav_options == "Add Book":
+elif nav_options == "Add Book ➕":
     st.session_state.current_view = 'add'
-elif nav_options == 'Search Books':
+elif nav_options == 'Search Books 🔍':
     st.session_state.current_view = 'search'
-elif nav_options == 'Library Statistics':
+elif nav_options == 'Library Statistics 📊':
     st.session_state.current_view = 'stats'
 
 st.markdown("<h1 class='main-header'> Personal Library Manager 📚 </h1>", unsafe_allow_html=True)
 
 if st.session_state.current_view == "add":
-    st.markdown("<h2 class='sub-header'> Add a new book</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 class='sub-header'> Add a new book 📚</h2>", unsafe_allow_html=True)
 
     #adding books input form
     with st.form(key='add_book_form'):
@@ -305,13 +309,13 @@ if st.session_state.current_view == "add":
             publication_year = st.number_input("Publication year", min_value=1000, max_value=datetime.now().year, step=1, value=2023)
 
         with col2:
-            genre = st.selectbox("Genre", [
+            genre = st.selectbox("Genre 📚", [
                 "Fiction", "Non-Fiction", "Science", "Technology", "Fantasy", "Art", "Religion", "Historic"
             ])
-            read_status = st.radio("Read Status", ["Read", "Unread"], horizontal=True)
-            read_bool = read_status == "Read"
+            read_status = st.radio("Read Status 📖", ["Read ✅", "Unread ❌"], horizontal=True)
+            read_bool = read_status == "Read ✅"
             
-        submit_button = st.form_submit_button(label="Add Book")
+        submit_button = st.form_submit_button(label="Add Book ➕")
 
         if submit_button and title and author:
             add_book(title, author, publication_year, genre, read_bool)
@@ -335,7 +339,7 @@ elif st.session_state.current_view == "library":
                             <p><strong>Publication Year:</strong> {book['publication_year']}</p>
                             <p><strong>Genre:</strong>{book['genre']}</p>
                             <p><span class='{"read-badge" if book["read_status"] else "unread-badge"}'>{
-                            "Read" if book["read_status"] else "Unread"
+                            "Read ✅" if book["read_status"] else "Unread ❌"
                             }</span></p>
                             </div>
                 """, unsafe_allow_html=True)
@@ -343,16 +347,16 @@ elif st.session_state.current_view == "library":
 elif st.session_state.current_view == "search":
     st.markdown("<h2 class='sub-header'> Search Books 🔍 </h2>", unsafe_allow_html=True)
 
-    search_term = st.text_input("Search term")
-    search_by = st.selectbox("Search by", ["Title", "Author", "Genre"])
+    search_term = st.text_input("Search term 🔍")
+    search_by = st.selectbox("Search by 📚", ["Title", "Author", "Genre"])
 
-    if st.button("Search"):
+    if st.button("Search 🔍"):
         search_books(search_term, search_by)
 
     if st.session_state.search_results:
         for book in st.session_state.search_results:
             st.markdown(f"📖 **{book['title']}** by {book['author']} (Genre: {book['genre']}, Published: {book['publication_year']})")
-            st.markdown(f"<p><span class='{'read-badge' if book['read_status'] else 'unread-badge'}'>{'Read' if book['read_status'] else 'Unread'}</span></p>", unsafe_allow_html=True)
+            st.markdown(f"<p><span class='{'read-badge' if book['read_status'] else 'unread-badge'}'>{'Read ✅' if book['read_status'] else 'Unread ❌'}</span></p>", unsafe_allow_html=True)
     else:
         st.markdown("<div class='warning-message'> No books found matching your search criteria! 😞</div>", unsafe_allow_html=True)
 
@@ -365,11 +369,11 @@ elif st.session_state.current_view == "stats":
         stats = get_library_stats()
         col1, col2, col3 = st.columns(3) 
         with col1:
-            st.metric("Total Books", stats['total_books'])
+            st.metric("Total Books 📚", stats['total_books'])
         with col2:
-            st.metric("Books Read", stats['read_books'])
+            st.metric("Books Read ✅", stats['read_books'])
         with col3:
-            st.metric("Percentage Read", f"{stats['percent_read']:.1f}%")
+            st.metric("Percentage Read 📈", f"{stats['percent_read']:.1f}%")
             
         create_visualizations(stats)
 
@@ -380,8 +384,4 @@ elif st.session_state.current_view == "stats":
                 st.markdown(f"**{author}**: {count} books{'s' if count > 1 else ''}")
                 
     st.markdown("---")
-    st.markdown("copyright @ 2025 Quratulain Personal Library Manager", unsafe_allow_html=True)
-
-    
-    
-
+    st.markdown("copyright @ 2025 Quratulain Personal Library Manager 📚", unsafe_allow_html=True)
