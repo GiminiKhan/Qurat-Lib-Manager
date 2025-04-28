@@ -156,8 +156,6 @@ def remove_book(index):
         return True
     return False 
 
-import streamlit as st
-
 # Search books
 def search_books(search_term, search_by):
     search_term = search_term.lower()
