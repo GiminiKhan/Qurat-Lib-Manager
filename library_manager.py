@@ -5,9 +5,6 @@ import os
 from datetime import datetime
 import time
 import random 
-import plotly.express as px
-import plotly.graph_objects as go 
-from streamlit_lottie import st_lottie
 import requests 
 
 #set page configuration 
@@ -18,76 +15,75 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-#custom css for styling
+# Custom CSS for styling
 st.markdown("""
-<style>
-    .main-header{
-    font-size: 3rem !important;
-    color:#1E3A8A;
-    font-weight:700;
-    margin-bottom: 1rem;
-    text-align: center;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0,1);
-    } 
-              
-    .sub_header{
-        font-size: 1.8rem !important;
-        color:#3882F6;
-        font-weight:600;
-        margin-top:1rem;
-        margin-bottom:1rem;   
-    }
-        
-    .success-message {
-        padding: 1rem;
-        background-color: #ECFDF5;
-        border-left: 5px solid #108981;
-        border-radius: 0.375rem;
-    }
-            
-    .warning-message {
-        padding: 1rem;
-        background-color: #FEF3C7;
-        border-left: 5px solid #F59E08;
-        border-radius: 0.375rem;
-    }
-        
-    .book-card {
-        background-color: #F3F4F6;
-        border-radius: 0.5rem;
-        padding:1rem;
-        margin-bottom: 1rem;
-        border-left:5px solid #1882F6;
-        transition: transform 0.3s ease;
-    }
-
-    .book-card-hover{
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-    }
-    .read-badge {
-        background-color: #10b981;
-        color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-    }
-    .unread-badge {
-        background-color: #108981;
-        color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-    }
-    .action-button {
-        margin-right: 0.5rem;
-    }
-    .stButton>button {
-        border-radius: 0.375rem;
-    }
-</style>          
+    <style>
+        body {
+            background-color: #111111;
+            color: #f5f5f5;
+        }
+        .main-header {
+            font-size: 3rem !important;
+            color: #f5f5f5;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .sub-header {
+            font-size: 1.8rem !important;
+            color: #3882F6;
+            font-weight: 600;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .success-message {
+            padding: 1rem;
+            background-color: #ECFDF5;
+            border-left: 5px solid #108981;
+            border-radius: 0.375rem;
+        }
+        .warning-message {
+            padding: 1rem;
+            background-color: #FEF3C7;
+            border-left: 5px solid #F59E08;
+            border-radius: 0.375rem;
+        }
+        .book-card {
+            background-color: #2C2C2C;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 5px solid #1882F6;
+            transition: transform 0.3s ease;
+        }
+        .book-card-hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        .read-badge {
+            background-color: #10b981;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .unread-badge {
+            background-color: #108981;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .action-button {
+            margin-right: 0.5rem;
+        }
+        .stButton>button {
+            border-radius: 0.375rem;
+        }
+    </style>
 """, unsafe_allow_html=True)
 
 def load_lottieurl(url):
@@ -101,7 +97,7 @@ def load_lottieurl(url):
     
 if 'library' not in st.session_state:
     st.session_state.library = []
-if  'search_results' not in st.session_state:
+if 'search_results' not in st.session_state:
     st.session_state.search_results = []
 if 'book_added' not in st.session_state:
     st.session_state.book_added = False 
@@ -117,12 +113,11 @@ def load_library():
             with open('library.json', 'r') as file:
                 st.session_state.library = json.load(file)
                 return True 
-            return False
+        return False
     except Exception as e:
         st.error(f"Error loading library: {e}")
         return False
-    
-#save library
+
 def save_library():
     try:
         with open('library.json', 'w') as file:
@@ -130,9 +125,8 @@ def save_library():
             return True
     except Exception as e:
         st.error(f"Error saving library: {e}")
-        return False 
-    
-#add a book to library 
+        return False
+
 def add_book(title, author, publication_year, genre, read_status):
     book = {
         'title': title,
@@ -144,23 +138,20 @@ def add_book(title, author, publication_year, genre, read_status):
     }
     st.session_state.library.append(book)
     save_library()
-    st.session_state.book_added = True 
-    time.sleep(0.5)  # animation delay
+    st.session_state.book_added = True
+    time.sleep(0.5)
 
-#remove books
 def remove_book(index):
     if 0 <= index < len(st.session_state.library):
         del st.session_state.library[index]
         save_library()
-        st.session_state.book_removed = True 
+        st.session_state.book_removed = True
         return True
     return False 
 
-# Search books
 def search_books(search_term, search_by):
     search_term = search_term.lower()
     results = []
-    
     for book in st.session_state.library:
         if search_by == "Title" and search_term in book['title'].lower():
             results.append(book)
@@ -170,127 +161,11 @@ def search_books(search_term, search_by):
             results.append(book)
     st.session_state.search_results = results
 
-# --- Minimal additions below ---
-
-# Example inputs (you can customize it as per your UI)
-search_term = st.text_input("Enter search term:")
-search_by = st.selectbox("Search by:", ["Title", "Author", "Genre"])
-
-if st.button("Search"):
-    search_books(search_term, search_by)
-
-# Display results
-if 'search_results' in st.session_state:
-    st.write("Search Results:")
-    for book in st.session_state.search_results:
-        st.write(f"Title: {book['title']}, Author: {book['author']}, Genre: {book['genre']}")
-
-
-#calculate library stats
-def get_library_stats():
-    total_books = len(st.session_state.library)
-    read_books = sum(1 for book in st.session_state.library if book['read_status'])
-    percent_read  = (read_books / total_books * 100) if total_books > 0 else 0
-
-    genres = {}
-    authors = {}
-    decades = {}
-
-    for book in st.session_state.library:
-        if book['genre'] in genres:
-            genres[book['genre']] += 1
-        else:
-            genres[book['genre']] = 1
-
-        #count author
-        if book['author'] in authors:
-            authors[book['author']] += 1
-        else:
-            authors[book['author']] = 1
-
-        #count decades
-        decade = (book['publication_year'] // 10) * 10
-        if decade in decades:
-            decades[decade] += 1
-        else:
-            decades[decade] = 1
-
-    #sort by count
-    genres = dict(sorted(genres.items(), key=lambda x: x[1], reverse=True))
-    authors = dict(sorted(authors.items(), key=lambda x: x[1], reverse=True))
-    decades = dict(sorted(decades.items(), key=lambda x: x[0]))  
-
-    return {
-        'total_books': total_books,
-        'read_books': read_books,
-        'percent_read': percent_read,
-        'genres': genres,
-        'authors': authors,
-        'decades': decades
-    }
-
-def create_visualizations(stats):
-    if stats['total_books'] > 0:
-        fig_read_status = go.Figure(data=[go.Pie(
-            labels=['Read', 'Unread'],
-            values=[stats['read_books'], stats['total_books'] - stats['read_books']],
-            hole=.4,
-            marker_colors=['#108981', '#F89717']
-        )])
-        fig_read_status.update_layout(
-            title_text="Read vs Unread Books",
-            showlegend=True,
-            height=400
-        )
-        st.plotly_chart(fig_read_status, use_container_width=True)
-
-    #bar chart genres
-    if stats['genres']:
-        genres_df = pd.DataFrame({
-            'Genre': list(stats['genres'].keys()),
-            'Count': list(stats['genres'].values())
-        })
-        fig_genres = px.bar(
-            genres_df,
-            x='Genre',
-            y='Count',
-            color='Count',
-            color_continuous_scale=px.colors.sequential.Blues
-        )
-        st.plotly_chart(fig_genres, use_container_width=True)
-
-    #decades visualization
-    if stats['decades']:
-        decades_df = pd.DataFrame({
-            'Decade': [f"{decade}s" for decade in stats['decades'].keys()],
-            'Count': list(stats['decades'].values())
-        })
-        fig_decades = px.line(
-            decades_df,
-            x='Decade',
-            y='Count',
-            markers=True,
-            line_shape="spline"
-        )
-        fig_decades.update_layout(
-            title_text='Books by Publication Decade',
-            xaxis_title='Decade',
-            yaxis_title='Number of Books',
-            height=400
-        )
-        st.plotly_chart(fig_decades, use_container_width=True)
-
-#load library
+# Initialize library
 load_library()
 
+# Sidebar setup for navigation
 st.sidebar.markdown("<h1 style='text-align: center;'> Navigation</h1>", unsafe_allow_html=True)
-
-lottie_book = load_lottieurl("https://assets9.lottieflies.com/temp/1f20_aKAfIn.json")
-
-if lottie_book:
-    with st.sidebar:
-        st_lottie(lottie_book, height=200, key='book_animation')
-
 nav_options = st.sidebar.radio(
     "Choose an option:",
     ["View Library", "Add Book", "Search Books", "Library Statistics"]
@@ -305,41 +180,38 @@ elif nav_options == 'Search Books':
 elif nav_options == 'Library Statistics':
     st.session_state.current_view = 'stats'
 
-st.markdown("<h1 class='main-header'> Personal Library Manager </h1>", unsafe_allow_html=True)
+# Main content header
+st.markdown("<h1 class='main-header'> Personal Library Manager 📚 </h1>", unsafe_allow_html=True)
 
+# Add book form
 if st.session_state.current_view == "add":
     st.markdown("<h2 class='sub-header'> Add a new book</h2>", unsafe_allow_html=True)
-
-    #adding books input form
     with st.form(key='add_book_form'):
         col1, col2 = st.columns(2)
-
         with col1:
             title = st.text_input("Book Title", max_chars=100)
             author = st.text_input("Author", max_chars=100)
             publication_year = st.number_input("Publication year", min_value=1000, max_value=datetime.now().year, step=1, value=2023)
-
         with col2:
             genre = st.selectbox("Genre", [
                 "Fiction", "Non-Fiction", "Science", "Technology", "Fantasy", "Art", "Religion", "Historic"
             ])
             read_status = st.radio("Read Status", ["Read", "Unread"], horizontal=True)
             read_bool = read_status == "Read"
-            
         submit_button = st.form_submit_button(label="Add Book")
-
         if submit_button and title and author:
             add_book(title, author, publication_year, genre, read_bool)
 
     if st.session_state.book_added:
-        st.markdown("<div class='success-message'> Book added successfully!</div>", unsafe_allow_html=True)
+        st.markdown("<div class='success-message'> Book added successfully! 🎉</div>", unsafe_allow_html=True)
         st.balloons()
         st.session_state.book_added = False
+
+# View library
 elif st.session_state.current_view == "library":
     st.markdown("<h2 class = 'sub-header'> Your Library </h2>", unsafe_allow_html=True)
-
     if not st.session_state.library:
-        st.markdown("<div class = 'warning-message'> Your library is empty. Add some books to get started!</div>", unsafe_allow_html=True)
+        st.markdown("<div class = 'warning-message'> Your library is empty. Add some books to get started! 😔</div>", unsafe_allow_html=True)
     else:
         cols = st.columns(2)
         for i, book in enumerate(st.session_state.library):
@@ -355,29 +227,15 @@ elif st.session_state.current_view == "library":
                             </div>
                 """, unsafe_allow_html=True)
 
-elif st.session_state.current_view == "stats":
-    st.markdown("<h2 class='sub-header'> Your Library Statistics</h2>", unsafe_allow_html=True)
+# Search books
+elif st.session_state.current_view == "search":
+    st.markdown("<h2 class='sub-header'> Search Books </h2>", unsafe_allow_html=True)
+    search_term = st.text_input("Enter search term")
+    search_by = st.selectbox("Search by", ["Title", "Author", "Genre"])
+    if st.button("Search"):
+        search_books(search_term, search_by)
     
-    if not st.session_state.library:
-        st.markdown("<div class='warning-message'> Your library is empty. Add some books to see stats!</div>", unsafe_allow_html=True)
-    else:
-        stats = get_library_stats()
-        col1, col2, col3 = st.columns(3) 
-        with col1:
-            st.metric("Total Books", stats['total_books'])
-        with col2:
-            st.metric("Books Read", stats['read_books'])
-        with col3:
-            st.metric("Percentage Read", f"{stats['percent_read']:.1f}%")
-            
-        create_visualizations(stats)
-
-        if stats['authors']:
-            st.markdown("<h3>Top Authors</h3>", unsafe_allow_html=True)
-            top_authors = dict(list(stats['authors'].items())[:5])
-            for author, count in top_authors.items():
-                st.markdown(f"**{author}**: {count} books{'s' if count > 1 else ''}")
-                
-    st.markdown("---")
-    st.markdown("copyright @ 2025 Quratulain Personal Library Manager", unsafe_allow_html=True)
+    if st.session_state.search_results:
+        for book in st.session_state.search_results:
+            st.markdown(f"📖 **{book['title']}** by {book['author']} (Genre: {book['genre']}, Published: {book['publication
 
