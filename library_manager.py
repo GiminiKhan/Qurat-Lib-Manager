@@ -156,7 +156,9 @@ def remove_book(index):
         return True
     return False 
 
-#search books 
+import streamlit as st
+
+# Search books
 def search_books(search_term, search_by):
     search_term = search_term.lower()
     results = []
@@ -169,6 +171,22 @@ def search_books(search_term, search_by):
         elif search_by == "Genre" and search_term in book['genre'].lower():
             results.append(book)
     st.session_state.search_results = results
+
+# --- Minimal additions below ---
+
+# Example inputs (you can customize it as per your UI)
+search_term = st.text_input("Enter search term:")
+search_by = st.selectbox("Search by:", ["Title", "Author", "Genre"])
+
+if st.button("Search"):
+    search_books(search_term, search_by)
+
+# Display results
+if 'search_results' in st.session_state:
+    st.write("Search Results:")
+    for book in st.session_state.search_results:
+        st.write(f"Title: {book['title']}, Author: {book['author']}, Genre: {book['genre']}")
+
 
 #calculate library stats
 def get_library_stats():
